@@ -1,12 +1,24 @@
+import {BlockButton, FormInput} from '@/components';
 import s from '@/styles/HomePage.module.scss';
-import {Ubuntu} from '@next/font/google';
-import cn from 'classnames';
+import {IBlock} from '@/types';
 import Head from 'next/head';
 import Image from 'next/image';
+import {useState} from 'react';
 
-const ubuntu = Ubuntu({subsets: ['cyrillic'], weight: ['400', '500']});
+const BLOCKS: IBlock[] = [
+  {block: 'block1', status: false},
+  {block: 'block2', status: false},
+  {block: 'block3', status: false},
+]
 
 export default function HomePage() {
+
+  const [activeBlock, setActiveBlock] = useState<IBlock[]>(BLOCKS);
+
+  function showHideBlock(name: string) {
+    setActiveBlock((v) => v.map((item) => item.block === name ? {...item, status: !item.status} : item));
+  }
+
   return (
     <>
       <Head>
@@ -15,32 +27,26 @@ export default function HomePage() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={cn(s.main, ubuntu.className)}>
+      <main className={s.main}>
 
         <div className={s.logo__wrapper} >
           <Image src="/logo.svg" alt="company Logo" className={s.logo} width={275} height={136} priority />
         </div>
         <div className={s.buttons__wrapper} >
-          <button className={cn(s.button, s.button__active, ubuntu.className)}>Блок 1</button>
-          <button className={cn(s.button, s.button__active, ubuntu.className)}>Блок 2</button>
-          <button className={cn(s.button, ubuntu.className)}>Блок 3</button>
+          {
+            activeBlock.map((block) =>
+              <BlockButton key={block.block} block={block} clickHandler={() => showHideBlock(block.block)} />
+            )
+          }
         </div>
-
         <div className={s.blocks__wrapper}>
-
-          <div className={s.block}>
-            <h2 className={s.block__title}>Блок 1</h2>
-            <div className={s.block__divider}></div>
-            <div className={s.block__form}>
-
-              <div className={s.form}>
-                <label className={s.form__label} >Фамилия</label>
-                <input type="text" className={cn(ubuntu.className, s.form__input)} placeholder={'Введите фамилию'} />
-              </div>
-
-            </div>
-          </div>
+          {
+            activeBlock.map((block) =>
+              block.status && <FormInput key={block.block} block={block} />
+            )
+          }
         </div>
+
       </main>
     </>
   )
