@@ -1,0 +1,17 @@
+.button {
+  display: block;
+  width: 118px;
+  height: 32px;
+  padding: 8px 10px;
+  color: #fff;
+  background: linear-gradient(93.88deg, #2F98CF 51.56%, #2FCFB2 100%);
+  box-shadow: 2px 2px 8px rgba(37, 37, 37, 0.25);
+  border-radius: 5px;
+  font-size: 14px;
+  line-height: 16px;
+  cursor: pointer;
+}
+
+.button__active {
+  background: #2E353B;
+}
