@@ -27,6 +27,36 @@ export function getFormInputText(input: string): IFormInput {
         placeholder: 'Введите фамилию',
       }
 
+    case 'birthday':
+      return {
+        label: 'День рождения',
+        placeholder: 'Введите день рождения',
+      }
+
+    case 'height':
+      return {
+        label: 'Рост',
+        placeholder: 'Введите рост',
+      }
+
+    case 'city':
+      return {
+        label: 'Город',
+        placeholder: 'Введите город',
+      }
+
+    case 'address':
+      return {
+        label: 'Улица',
+        placeholder: 'Введите улица',
+      }
+
+    case 'index':
+      return {
+        label: 'Почтовый индекс',
+        placeholder: 'Введите почтовый индекс',
+      }
+
     default:
       return {
         label: 'Заголовок',
