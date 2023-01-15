@@ -6,25 +6,28 @@ import Image from 'next/image';
 import {useEffect, useMemo, useState} from 'react';
 
 const BLOCKS: IBlock[] = [
-  {block: 'block1', status: false},
-  {block: 'block2', status: false},
-  {block: 'block3', status: false},
+  {name: 'block1', isOpen: false},
+  {name: 'block2', isOpen: false},
+  {name: 'block3', isOpen: false},
 ]
+
+const url = 'wss://taxivoshod.ru:8999';
 
 export default function HomePage() {
 
-  const wsInstance = useMemo(() => typeof window != 'undefined' ? new WebSocket('wss://taxivoshod.ru:8999') : null, []);
+  const wsInstance = useMemo(() => typeof window != 'undefined' ? new WebSocket(url) : null, []);
   const [activeBlock, setActiveBlock] = useState<IBlock[]>(BLOCKS);
 
   useEffect(() => {
     if (wsInstance) wsInstance.onopen = () => console.log('[open] ws connection started');
     if (wsInstance) wsInstance.onclose = () => console.log('[close] ws connection closed');
-    
-    return () => wsInstance?.close();
+
+    /*!!! uncomment before production */
+    // return () => wsInstance?.close();
   }, []);
 
   function toggleBlock(name: string) {
-    setActiveBlock((v) => v.map((item) => item.block === name ? {...item, status: !item.status} : item));
+    setActiveBlock((v) => v.map((item) => item.name === name ? {...item, isOpen: !item.isOpen} : item));
   }
 
   return (
@@ -43,14 +46,14 @@ export default function HomePage() {
         <div className={s.buttons__wrapper} >
           {
             activeBlock.map((block) =>
-              <BlockButton key={block.block} block={block} clickHandler={() => toggleBlock(block.block)} />
+              <BlockButton key={block.name} block={block} clickHandler={() => toggleBlock(block.name)} />
             )
           }
         </div>
         <div className={s.blocks__wrapper}>
           {
             activeBlock.map((block) =>
-              block.status && <FormBlock key={block.block} block={block} webSocket={wsInstance} />
+              block.isOpen && <FormBlock key={block.name} block={block.name} webSocket={wsInstance} />
             )
           }
         </div>
