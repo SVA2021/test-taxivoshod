@@ -28,7 +28,6 @@ export const FormInput: FC<FormInputProps> = ({fieldName, fieldValue, isReadOnly
         className={cn(ubuntu.className, s.form__input)}
         placeholder={getFormInputText(fieldName).placeholder}
         readOnly={isReadOnly}
-        // value={fieldValue}
         defaultValue={fieldValue}
         onFocus={() => focusHandler()}
         onBlur={() => blurHandler()}
