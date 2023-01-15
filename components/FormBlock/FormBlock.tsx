@@ -1,68 +1,63 @@
-import {IBlock, ISocketRes} from '@/types';
-import {getBlockButtonName, getFormInputText} from '@/utils';
+import {IBlock, IBlockData, IBlockStatus, } from '@/types';
+import useWebSocket from '@/useWebSocket';
+import {getBlockButtonName, } from '@/utils';
 import {Ubuntu} from '@next/font/google';
 import cn from 'classnames';
 import {FC, useEffect, useState} from 'react';
+import {FormInput} from '../FormInput/FormInput';
 import s from './FormBlock.module.scss';
 
 const ubuntu = Ubuntu({subsets: ['cyrillic'], weight: ['400']});
 
 interface FormBlockProps {
-  block: IBlock
+  block: string
   webSocket: WebSocket | null
 }
 
 export const FormBlock: FC<FormBlockProps> = ({block, webSocket}) => {
 
-  // const socket = new WebSocket('wss://taxivoshod.ru:8999');
+  const {message, error, subscribe, unsubscribe, setFocus, setBlur} = useWebSocket(webSocket);
 
-  const [state, setState] = useState<ISocketRes | null>(null);
-  const formsData = !state ? [] : Object.keys(state.data);
+  const [formData, setFormData] = useState<IBlockData | undefined>();
+  const [formStatus, setFormStatus] = useState<IBlockStatus | undefined>();
+  const formFields = (!formData) ? [] : Object.keys(formData);
 
   useEffect(() => {
-    console.log('useffect started');
-    // console.log(state);
-
-    // if (socket) {
-
-    //   socket.onopen = () => {
-    //     console.log('socket open');
-    //     // socket.send(JSON.stringify({"command": "subscribe", "block": block.block}));
-    //   }
-
-    //   socket.onmessage = (e) => setState(JSON.parse(e.data));
-    // }
-
-    // socket.onclose = () => console.log('socket close')
-
-    // return () => {
-    //   if (socket.OPEN) console.log('socket will close')
-    // }
-
+    subscribe(block);
+    return () => {
+      /*!!! uncomment before production */
+      // unsubscribe(block);
+    }
   }, [])
 
-  useEffect(() => console.log(state), [state])
+  useEffect(() => {
+    if (message?.data) setFormData(message.data);
+    if (message?.status) setFormStatus(message.status);
+    if (message?.focus && formStatus) {
+      setFormStatus((v) => message.focus !== undefined ? ({...v, [message?.focus]: true}) : v);
+    }
+    if (message?.blur && formStatus) {
+      setFormStatus((v) => message.blur !== undefined ? ({...v, [message?.blur]: false}) : v);
+    }
+  }, [message])
 
   return (
     <div className={cn(ubuntu.className, s.block)}>
-      <h2 className={s.block__title}>{getBlockButtonName(block.block)}</h2>
+      <h2 className={s.block__title}>{getBlockButtonName(block)}</h2>
       <div className={s.block__divider}></div>
       <div className={s.block__form}>
-
         {
-          formsData.map((item) =>
-            <div className={s.form} key={item}>
-              <label className={s.form__label} >{getFormInputText(item).label}</label>
-              <input type="text"
-                className={cn(ubuntu.className, s.form__input)}
-                placeholder={getFormInputText(item).placeholder}
-                disabled={state?.status[item]}
-                value={state?.data[item]}
-              />
-            </div>
+          formFields.map((field) =>
+            <FormInput
+              key={field}
+              fieldName={field}
+              fieldValue={formData ? formData[field] : ''}
+              isReadOnly={formStatus ? formStatus[field] : false}
+              focusHandler={() => setFocus(block, field)}
+              blurHandler={() => setBlur(block, field)}
+            />
           )
         }
-
       </div>
     </div>
   );
