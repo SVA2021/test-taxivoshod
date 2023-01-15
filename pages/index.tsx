@@ -1,4 +1,4 @@
-import {BlockButton, FormInput} from '@/components';
+import {BlockButton, FormBlock} from '@/components';
 import s from '@/styles/HomePage.module.scss';
 import {IBlock} from '@/types';
 import Head from 'next/head';
@@ -17,8 +17,8 @@ export default function HomePage() {
   const [activeBlock, setActiveBlock] = useState<IBlock[]>(BLOCKS);
 
   useEffect(() => {
-    if (wsInstance) wsInstance.onopen = () => console.log('ws connection started');
-    if (wsInstance) wsInstance.onclose = () => console.log('ws connection closed');
+    if (wsInstance) wsInstance.onopen = () => console.log('[open] ws connection started');
+    if (wsInstance) wsInstance.onclose = () => console.log('[close] ws connection closed');
     
     return () => wsInstance?.close();
   }, []);
@@ -50,7 +50,7 @@ export default function HomePage() {
         <div className={s.blocks__wrapper}>
           {
             activeBlock.map((block) =>
-              block.status && <FormInput key={block.block} block={block} webSocket={wsInstance} />
+              block.status && <FormBlock key={block.block} block={block} webSocket={wsInstance} />
             )
           }
         </div>

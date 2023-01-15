@@ -1,2 +1,2 @@
 export * from './BlockButton/BlockButton';
-export * from './FormInput/FormInput';
+export * from './FormBlock/FormBlock';

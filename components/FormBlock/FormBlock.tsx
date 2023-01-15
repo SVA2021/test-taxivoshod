@@ -3,16 +3,16 @@ import {getBlockButtonName, getFormInputText} from '@/utils';
 import {Ubuntu} from '@next/font/google';
 import cn from 'classnames';
 import {FC, useEffect, useState} from 'react';
-import s from './FormInput.module.scss';
+import s from './FormBlock.module.scss';
 
 const ubuntu = Ubuntu({subsets: ['cyrillic'], weight: ['400']});
 
-interface FormInputProps {
+interface FormBlockProps {
   block: IBlock
   webSocket: WebSocket | null
 }
 
-export const FormInput: FC<FormInputProps> = ({block, webSocket}) => {
+export const FormBlock: FC<FormBlockProps> = ({block, webSocket}) => {
 
   // const socket = new WebSocket('wss://taxivoshod.ru:8999');
 
