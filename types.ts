@@ -1,11 +1,17 @@
 export interface ISocketRes {
   block: string
-  data: {
-    [key: string]: string
-  }
-  status: {
-    [key: string]: boolean
-  }
+  data?: IBlockData
+  status?: IBlockStatus
+  focus?: string
+  blur?: string
+}
+
+export interface IBlockData {
+  [key: string]: string
+}
+
+export interface IBlockStatus {
+  [key: string]: boolean
 }
 
 export interface IFormInput {
@@ -14,6 +20,6 @@ export interface IFormInput {
 }
 
 export interface IBlock {
-  block: string
-  status: boolean
+  name: string
+  isOpen: boolean
 }
