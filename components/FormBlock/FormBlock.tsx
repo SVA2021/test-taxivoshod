@@ -2,7 +2,7 @@ import {IBlockData, IBlockStatus, ISocketData} from '@/types';
 import {getBlockButtonName} from '@/utils';
 import {Ubuntu} from '@next/font/google';
 import cn from 'classnames';
-import {FC, useEffect, useMemo, useRef} from 'react';
+import {FC, useEffect, useMemo} from 'react';
 import {FormInput} from '../FormInput/FormInput';
 import s from './FormBlock.module.scss';
 
@@ -19,8 +19,6 @@ interface FormBlockProps {
 
 export const FormBlock: FC<FormBlockProps> = ({block, wsState, setBlur, setFocus, subscribe, unsubscribe}) => {
 
-  const firstEffectRan = useRef(false);
-
   const formData = useMemo<IBlockData | undefined>(() => wsState?.data, [wsState]);
   const formStatus = useMemo<IBlockStatus | undefined>(() => wsState?.status, [wsState]);
   const formFields = (!formData) ? [] : Object.keys(formData);
@@ -28,8 +26,7 @@ export const FormBlock: FC<FormBlockProps> = ({block, wsState, setBlur, setFocus
   useEffect(() => {
     subscribe(block);
     return () => {
-      if (firstEffectRan.current) unsubscribe(block);
-      firstEffectRan.current = true;
+      unsubscribe(block);
     }
   }, [])
 

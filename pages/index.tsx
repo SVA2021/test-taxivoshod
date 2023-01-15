@@ -4,7 +4,7 @@ import {IBlock} from '@/types';
 import useWebSocket from '@/useWebSocket';
 import Head from 'next/head';
 import Image from 'next/image';
-import {useEffect, useMemo, useRef, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 
 const BLOCKS: IBlock[] = [
   {name: 'block1', isOpen: false},
@@ -16,20 +16,15 @@ const url = 'wss://taxivoshod.ru:8999';
 
 export default function HomePage() {
 
-  const firstEffectRan = useRef(false);
-
   const wsInstance = useMemo(() => typeof window != 'undefined' ? new WebSocket(url) : null, []);
   const {wsState, error, subscribe, unsubscribe, setFocus, setBlur} = useWebSocket(wsInstance);
   const [activeBlock, setActiveBlock] = useState<IBlock[]>(BLOCKS);
 
   useEffect(() => {
-    if (firstEffectRan.current) {
-      if (wsInstance) wsInstance.onopen = () => console.log('[open] ws connection started');
-      if (wsInstance) wsInstance.onclose = () => console.log('[close] ws connection closed');
-    }
+    if (wsInstance) wsInstance.onopen = () => console.log('[open] ws connection started');
+    if (wsInstance) wsInstance.onclose = () => console.log('[close] ws connection closed');
     return () => {
-      if (firstEffectRan.current) wsInstance?.close();
-      firstEffectRan.current = true;
+      wsInstance?.close();
     }
   }, []);
 
