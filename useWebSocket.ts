@@ -1,17 +1,38 @@
-import {Dispatch, SetStateAction, useCallback, useEffect, useState} from 'react'
-import {ISocketRes} from './types';
+import {useCallback, useEffect, useState} from 'react';
+import {ISocketState} from './types';
 
 function useWebSocket(defaultSocket: WebSocket | null) {
 
-  const [message, setMessage] = useState<ISocketRes | null>(null);
+  const [wsState, setWsState] = useState<ISocketState>({});
   const [error, setError] = useState<any>(null);
 
   useEffect(() => {
     try {
       if (defaultSocket) {
         defaultSocket.onmessage = ((e) => {
-          console.log(JSON.parse(e.data))
-          setMessage(JSON.parse(e.data))
+          const messageData = JSON.parse(e.data);
+          console.log(messageData);
+          if (messageData.data && messageData.status) {
+            setWsState((state) => ({...state, [messageData.block]: {data: messageData.data, status: messageData.status}}))
+          }
+          if (messageData.focus) {
+            setWsState((state) => ({
+              ...state,
+              [messageData.block]: {
+                data: state[messageData.block].data,
+                status: {...state[messageData.block].status, [messageData.focus]: true}
+              }
+            }))
+          }
+          if (messageData.blur) {
+            setWsState((state) => ({
+              ...state,
+              [messageData.block]: {
+                data: state[messageData.block].data,
+                status: {...state[messageData.block].status, [messageData.blur]: false}
+              }
+            }))
+          }
         });
       }
     } catch (e) {
@@ -56,7 +77,7 @@ function useWebSocket(defaultSocket: WebSocket | null) {
     }
   }, [defaultSocket]);
 
-  return {message, error, subscribe, unsubscribe, setFocus, setBlur}
+  return {wsState, error, subscribe, unsubscribe, setFocus, setBlur}
 }
 
 export default useWebSocket;

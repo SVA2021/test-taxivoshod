@@ -6,6 +6,15 @@ export interface ISocketRes {
   blur?: string
 }
 
+export interface ISocketState {
+  [key: string]: ISocketData
+}
+
+export interface ISocketData {
+  data: IBlockData
+  status: IBlockStatus
+}
+
 export interface IBlockData {
   [key: string]: string
 }

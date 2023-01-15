@@ -1,9 +1,8 @@
-import {IBlock, IBlockData, IBlockStatus, } from '@/types';
-import useWebSocket from '@/useWebSocket';
-import {getBlockButtonName, } from '@/utils';
+import {IBlockData, IBlockStatus, ISocketData} from '@/types';
+import {getBlockButtonName} from '@/utils';
 import {Ubuntu} from '@next/font/google';
 import cn from 'classnames';
-import {FC, useEffect, useState} from 'react';
+import {FC, useEffect, useMemo, useRef} from 'react';
 import {FormInput} from '../FormInput/FormInput';
 import s from './FormBlock.module.scss';
 
@@ -11,34 +10,28 @@ const ubuntu = Ubuntu({subsets: ['cyrillic'], weight: ['400']});
 
 interface FormBlockProps {
   block: string
-  webSocket: WebSocket | null
+  wsState: ISocketData | undefined
+  subscribe: (block: string) => void
+  unsubscribe: (block: string) => void
+  setFocus: (block: string, field: string) => void
+  setBlur: (block: string, field: string) => void
 }
 
-export const FormBlock: FC<FormBlockProps> = ({block, webSocket}) => {
+export const FormBlock: FC<FormBlockProps> = ({block, wsState, setBlur, setFocus, subscribe, unsubscribe}) => {
 
-  const {message, error, subscribe, unsubscribe, setFocus, setBlur} = useWebSocket(webSocket);
+  const firstEffectRan = useRef(false);
 
-  const [formData, setFormData] = useState<IBlockData | undefined>();
-  const [formStatus, setFormStatus] = useState<IBlockStatus | undefined>();
+  const formData = useMemo<IBlockData | undefined>(() => wsState?.data, [wsState]);
+  const formStatus = useMemo<IBlockStatus | undefined>(() => wsState?.status, [wsState]);
   const formFields = (!formData) ? [] : Object.keys(formData);
 
   useEffect(() => {
     subscribe(block);
     return () => {
-      unsubscribe(block);
+      if (firstEffectRan.current) unsubscribe(block);
+      firstEffectRan.current = true;
     }
   }, [])
-
-  useEffect(() => {
-    if (message?.data) setFormData(message.data);
-    if (message?.status) setFormStatus(message.status);
-    if (message?.focus && formStatus) {
-      setFormStatus((v) => message.focus !== undefined ? ({...v, [message?.focus]: true}) : v);
-    }
-    if (message?.blur && formStatus) {
-      setFormStatus((v) => message.blur !== undefined ? ({...v, [message?.blur]: false}) : v);
-    }
-  }, [message])
 
   return (
     <div className={cn(ubuntu.className, s.block)}>
