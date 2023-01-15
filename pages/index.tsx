@@ -22,8 +22,7 @@ export default function HomePage() {
     if (wsInstance) wsInstance.onopen = () => console.log('[open] ws connection started');
     if (wsInstance) wsInstance.onclose = () => console.log('[close] ws connection closed');
 
-    /*!!! uncomment before production */
-    // return () => wsInstance?.close();
+    return () => wsInstance?.close();
   }, []);
 
   function toggleBlock(name: string) {

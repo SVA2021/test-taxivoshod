@@ -25,8 +25,7 @@ export const FormBlock: FC<FormBlockProps> = ({block, webSocket}) => {
   useEffect(() => {
     subscribe(block);
     return () => {
-      /*!!! uncomment before production */
-      // unsubscribe(block);
+      unsubscribe(block);
     }
   }, [])
 
