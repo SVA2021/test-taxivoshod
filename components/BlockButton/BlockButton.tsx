@@ -15,10 +15,10 @@ const ubuntu = Ubuntu({subsets: ['cyrillic'], weight: ['500']});
 export const BlockButton: FC<BlockButtonProps> = ({block, clickHandler}) => {
   return (
     <button
-      className={cn(s.button, ubuntu.className, block.status ? s.button__active : '')}
+      className={cn(s.button, ubuntu.className, block.isOpen ? s.button__active : '')}
       onClick={() => clickHandler()}
     >
-      {getBlockButtonName(block.block)}
+      {getBlockButtonName(block.name)}
     </button>
   );
 };
